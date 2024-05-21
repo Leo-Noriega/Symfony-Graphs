@@ -1,3 +1,40 @@
 body {
     background-color: #fff;
 }
+
+#container-chart {
+    border : 5px solid #0D622D;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.data-table {
+    width: 100%;
+    margin: 0 auto;
+    margin-top: 10px;
+    border-collapse: collapse;
+    font-size: 1em;
+    font-family: sans-serif;
+    text-align: left;
+}
+
+.data-table th, 
+.data-table td {
+    padding: 10px 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+.data-table th {
+    background-color: #0D622D;
+    color: #fff;
+}
+
+.data-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+.data-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+.data-table tbody tr:last-of-type {
+    border-bottom: 3px solid #0D622D;
+}

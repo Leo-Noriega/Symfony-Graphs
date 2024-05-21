@@ -1,23 +1,43 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Home
+{% endblock %}
 
 {% block body %}
-    <h1>Refrigerantes en el documento excel</h1>
-    {% if chartData is not null %}
-        <div id="chart" data-controller="chart" data-chart-chart-data-value="{{ chartData|json_encode }}"></div>
-        <div id="chart-container" style="width: 100%; height: 750px;"></div>
-    {% else %}
-        <p>No hay datos disponibles para mostrar el gráfico.</p>
-    {% endif %}
-    <ul>
-        {% for zone, refrigerants in refrigerantData %}
-            <h2>{{ zone }}</h2>
-            <ul>
-                {% for refrigerant, count in refrigerants %}
-                    <li>{{ refrigerant }}: {{ count }} vez/veces</li>
-                {% endfor %}
-            </ul>
-        {% endfor %}
-    </ul>
+	<h1>Refrigerantes en el documento excel</h1>
+	{% if chartData is not null %}
+		<div id="container-chart">
+			<div id="chart" data-controller="chart" data-chart-chart-data-value="{{ chartData|json_encode }}"></div>
+			<div id="chart-container" style="width: 100%; height: 700px;"></div>
+		</div>
+	{% else %}
+		<p>No hay datos disponibles para mostrar el gráfico.</p>
+	{% endif %}
+	{% set currentZone = '' %}
+	{% set normalizedRefrigerantTypes = [] %}
+	{% for refrigerant in refrigerantTypes %}
+		{% set normalizedRefrigerant = refrigerant|trim|upper|replace({' ': '', '-': ''}) %}
+		{% if normalizedRefrigerant not in normalizedRefrigerantTypes %}
+			{% set normalizedRefrigerantTypes = normalizedRefrigerantTypes|merge([normalizedRefrigerant]) %}
+		{% endif %}
+	{% endfor %}
+
+	<table class="data-table">
+		<tr>
+			<th>Zone</th>
+			{% for refrigerant in normalizedRefrigerantTypes %}
+				<th>{{ refrigerant }}</th>
+			{% endfor %}
+		</tr>
+		{% for zone in zones %}
+			<tr>
+				<td>{{ zone }}</td>
+				{% for refrigerant in normalizedRefrigerantTypes %}
+					{% set refrigerantKey = refrigerant == 'NOESPECIFICADO' ? 'No especificado' : refrigerant %}
+					{% set count = refrigerantData[zone][refrigerantKey] is defined ? refrigerantData[zone][refrigerantKey] : 0 %}
+					<td>{{ count > 0 ? count ~ '' : '' }}</td>
+				{% endfor %}
+			</tr>
+		{% endfor %}
+	</table>
 {% endblock %}

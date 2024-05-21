@@ -7,7 +7,7 @@ export default class extends Controller {
     const chartData = JSON.parse(chartElement.dataset.chartChartDataValue);
     const chartContainer = document.getElementById("chart-container");
 
-    var myChart = echarts.init(chartContainer, "dark");
+    var myChart = echarts.init(chartContainer);
 
     // Construir el dataset
     const refrigerantsSet = new Set();
@@ -16,12 +16,8 @@ export default class extends Controller {
     chartData.forEach((entry) => {
       const categoryName = entry.name;
       dataMap[categoryName] = {};
-      // !REGEX to eliminate human errors
       entry.data.forEach((item) => {
-        const refrigerantName = item.name
-          .trim()
-          .toUpperCase()
-          .replace(/[\s-]/g, "");
+        const refrigerantName = item.name;
         refrigerantsSet.add(refrigerantName);
         dataMap[categoryName][refrigerantName] = item.valor;
       });
@@ -81,8 +77,8 @@ export default class extends Controller {
       series: refrigerants.map((refrigerant) => ({
         type: "bar",
         name: refrigerant,
-        barGap: '0%',
-        barCategoryGap: '10%',
+        barGap: "0%",
+        barCategoryGap: "10%",
         emphasis: {
           focus: "series",
         },

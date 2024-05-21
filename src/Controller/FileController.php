@@ -25,26 +25,33 @@ class FileController extends AbstractController
     protected function loadFile($file)
     {
         $extension = $file->getClientOriginalExtension();
-        if ($extension === 'xlsx')
+        if ($extension === 'xlsx') {
             $reader = new ReaderXlsx();
-        else
+        } else {
             return $this->json(error_clear_last());
+        }
 
         $reader->setReadDataOnly(true);
         $spreadsheet = $reader->load($file);
         $sheetCount = $spreadsheet->getSheetCount();
         $refrigerantData = [];
         $lastValidZone = null;
+
         for ($i = 0; $i < $sheetCount; $i++) {
             $sheet = $spreadsheet->getSheet($i);
             $highestRow = $sheet->getHighestRow();
+
             for ($row = 3; $row <= $highestRow; $row++) {
                 $refrigerantType = $sheet->getCell('I' . $row)->getValue();
+
                 if (empty($refrigerantType)) {
-                    // The empty refrigerants write as 'No especificado'
                     $refrigerantType = 'No especificado';
+                } else {
+                    $refrigerantType = strtoupper(str_replace([' ', '-'], '', $refrigerantType));
                 }
+
                 $zone = $sheet->getCell('A' . $row)->getValue();
+
                 if (empty($zone) && $lastValidZone !== null) {
                     $zone = $lastValidZone;
                 } elseif (!empty($zone)) {
@@ -90,7 +97,7 @@ class FileController extends AbstractController
             }
         }
 
-        // // Construir el array final de datos para pasar a la plantilla Twig
+        // Construir el array final de datos para pasar a la plantilla Twig
         $chartDataFinal = [];
         foreach ($zones as $zoneIndex => $zone) {
             $seriesData = ['name' => $zone, 'data' => []];
@@ -102,14 +109,13 @@ class FileController extends AbstractController
             $chartDataFinal[] = $seriesData;
         }
 
-        // return $this->json($chartDataFinal);
-        // return $this->json($refrigerantData);
-
         return $this->render(
             'refrigerant.html.twig',
             [
                 'refrigerantData' => $refrigerantData,
+                'refrigerantTypes' => $refrigerantTypes,
                 'chartData' => $chartDataFinal,
+                'zones' => $zones,
             ]
         );
     }
