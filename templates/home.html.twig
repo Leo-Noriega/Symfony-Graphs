@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Home{% endblock %}
+
+{% block body %}
+    <h1>Welcome, pagina home</h1>
+
+    {# <p>{{search}}</p> #}
+
+    <form method="post" action="{{path('file_upload')}}" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+    </form>
+
+{% endblock %}
+
+
